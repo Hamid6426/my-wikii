@@ -6,7 +6,7 @@ This repo is a personal knowledge base of Markdown notes. Keep the structure con
 
 - All topic notes live under [`wiki/`](wiki/README.md).
 - [`wiki/README.md`](wiki/README.md) is the topic index and holds the generated table of contents of every page.
-- [`scripts/`](scripts) holds the Python helpers that maintain the wiki.
+- [`scripts/`](scripts) holds the shell helpers that maintain the wiki.
 - Agent instructions and page rules: [`AGENTS.md`](AGENTS.md).
 
 ```
@@ -37,7 +37,7 @@ These rules are mandatory.
 After adding or moving pages, run this from the repo root to refresh tags and the table of contents:
 
 ```bash
-python scripts/sync-tags.py
+./scripts/sync-tags.sh   # or ./scripts/check.sh to fix and verify everything
 ```
 
 ## Language folders
@@ -62,9 +62,9 @@ python scripts/sync-tags.py
 `format.sh` cleans Markdown in place. Pass a file or a folder (folders are searched recursively). Run it from the repo root.
 
 ```bash
-./format.sh wiki/                     # whole wiki
-./format.sh wiki/<folder>             # one folder
-./format.sh wiki/<folder>/<file>.md   # one file
+./scripts/format.sh wiki/                     # whole wiki
+./scripts/format.sh wiki/<folder>             # one folder
+./scripts/format.sh wiki/<folder>/<file>.md   # one file
 ```
 
 It does the following and nothing else:
@@ -85,7 +85,7 @@ Never commit `.env`, credentials, or tokens. `graft/` is a local cache and stays
 
 1. Edit only what the change needs. No drive-by rewrites.
 2. Update the parent `README.md` tables and lists.
-3. Run `./format.sh` on the files you changed.
+3. Run `./scripts/format.sh` on the files you changed.
 4. Keep commits small. The message says why the notes changed.
 
 ## Do not

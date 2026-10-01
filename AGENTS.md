@@ -4,7 +4,7 @@ Instructions for coding agents working in **learning-and-skills**.
 
 ## What this repo is
 
-A personal knowledge base of Markdown notes for learning software engineering. It is not an application. Content lives in `wiki/`. Python scripts in `scripts/` maintain it.
+A personal knowledge base of Markdown notes for learning software engineering. It is not an application. Content lives in `wiki/`. Shell scripts in `scripts/` maintain and check it.
 
 ## Layout
 
@@ -12,8 +12,8 @@ A personal knowledge base of Markdown notes for learning software engineering. I
 | ------------------------- | ------------------------------------------------------------------------- |
 | `wiki/`                   | All topic notes (Linux, containers, C#, Java, and more)                   |
 | `wiki/README.md`          | Topic index. The table of contents block is generated.                    |
-| `scripts/sync-tags.py`    | Adds `Tags:` lines and rebuilds the table of contents in `wiki/README.md` |
-| `scripts/fix-encoding.py` | Repairs garbled characters (needs `pip install ftfy`)                     |
+| `scripts/sync-tags.sh`    | Adds `Tags:` lines and rebuilds the table of contents in `wiki/README.md` |
+| `scripts/fix-encoding.sh` | Repairs garbled characters                                                |
 
 ## Wiki rules
 
@@ -24,7 +24,7 @@ Rules for writing pages are here and in `CONTRIBUTING.md`. Read them before edit
 - Never create `something.md` topic files outside language folders (except `README.md` and tooling or config files).
 - New notes go in `.../topic-name/README.md`, linked from the parent index.
 - Docker lives under `containers/docker/`. Peer tools (Podman, runtimes, builders, desktop GUIs) are siblings under `containers/`. Linux host topics live under `linux/`.
-- Every `README.md` has a `Tags:` line under the H1. Folders become tags; extra tags live in `scripts/sync-tags.py` (`EXTRA`).
+- Every `README.md` has a `Tags:` line under the H1. Folders become tags; extra tags live in `scripts/sync-tags.sh` (`EXTRA`, an associative array).
 - Link every new page from its parent `README.md`. Prefer relative links and check the targets exist.
 - When renaming or moving folders, update all relative links.
 
@@ -40,8 +40,18 @@ Rules for writing pages are here and in `CONTRIBUTING.md`. Read them before edit
 Run these from the repo root.
 
 ```bash
-python scripts/sync-tags.py   # after adding or moving pages
-./format.sh wiki/             # format a folder or file (wiki/<folder>, wiki/<folder>/<file>.md)
+./scripts/check.sh            # run every fix and check (add --no-fix to only check)
+./scripts/sync-tags.sh       # add Tags: lines and rebuild the table of contents in wiki/README.md
+./scripts/format.sh wiki/    # format Markdown (a file or folder)
+./scripts/fix-encoding.sh    # repair garbled characters
+./scripts/check-links.sh     # find broken relative links
+./scripts/check-structure.sh # enforce the wiki layout rules
+./scripts/check-dashes.sh    # find em dashes
+./scripts/check-secrets.sh   # find .env files and secret-looking strings
+./scripts/check-examples.sh  # compile the example code
+./scripts/stats.sh           # page counts and thin pages
+./scripts/new-page.sh <path> "<Title>"   # new topic page, linked from its parent
+./scripts/new-lesson.sh <lang> "<Title>" # next numbered lesson in a language folder
 ```
 
 ## Do not
