@@ -20,7 +20,7 @@ export LC_ALL=C
 ROOT="$(CDPATH= cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 README_NAME="README.md"
 LANGS_DIR="langs"
-LANGUAGES=(html css javascript typescript csharp java python)
+LANGUAGES=(html-and-css javascript typescript csharp java python)
 # Folders allowed inside a language folder that are not lessons.
 NON_LESSON_DIRS=(examples algorithms 888_algorithms docs src)
 LESSON_RE='^([0-9]{2})_[a-z0-9]+(_[a-z0-9]+)*\.md$'
@@ -289,7 +289,7 @@ while IFS= read -r -d '' path; do
   fi
   check_header "$rel"
   [[ "$rel" == "$README_NAME" ]] || check_parent_link "$rel"
-done < <(find "$WIKI" \( -name .git -o -name graft \) -prune -o -type f -name '*.md' -print0 | sort -z)
+done < <(find "$WIKI" \( -name .git -o -name graft -o -name tmp \) -prune -o -type f -name '*.md' -print0 | sort -z)
 
 for name in "${LANGUAGES[@]}"; do
   if [[ -d "$WIKI/$LANGS_DIR/$name" ]]; then

@@ -279,7 +279,7 @@ while IFS= read -r -d '' path; do
   folder="$(rel_folder "$rel")"
   key="0${folder//\//$'\x01'}"
   RECORDS+="${key}"$'\t'"${rel}"$'\t'"${tags}"$'\t'"$(title_of "$path")"$'\n'
-done < <(find "$ROOT" -type f -name "$README_NAME" -print0 | sort -z)
+done < <(find "$ROOT" \( -name .git -o -name graft -o -name node_modules -o -name tmp \) -prune -o -type f -name "$README_NAME" -print0 | sort -z)
 
 RECORDS="$(printf '%s' "$RECORDS" | sort -t $'\t' -k1,1)"
 

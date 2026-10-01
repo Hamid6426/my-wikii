@@ -55,7 +55,7 @@ while IFS= read -r hit; do
   echo "$(show_path "$file"):$lineno: em dash"
   problems=$((problems + 1))
 done < <(grep -rnHF \
-  --exclude-dir=.git --exclude-dir=graft --exclude-dir=node_modules \
+  --exclude-dir=.git --exclude-dir=graft --exclude-dir=node_modules --exclude-dir=tmp \
   --include='*.md' --include='*.sh' --include='*.py' --include='*.cs' \
   --include='*.java' --include='*.js' --include='*.ts' --include='*.json' \
   --include='*.yml' --include='*.txt' \

@@ -62,7 +62,7 @@ problems=0
 while IFS= read -r f; do
   echo "$(show_path "$f"):1: env file should not be committed"
   problems=$((problems + 1))
-done < <(find "${targets[@]}" \( -name .git -o -name graft -o -name node_modules \) -prune \
+done < <(find "${targets[@]}" \( -name .git -o -name graft -o -name node_modules -o -name tmp \) -prune \
   -o -type f \( -name .env -o -name '.env.*' \) ! -name .env.example -print | sort)
 
 for entry in "${PATTERNS[@]}"; do

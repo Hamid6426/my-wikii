@@ -94,7 +94,7 @@ for s in "${scopes[@]}"; do
   while IFS= read -r -d '' f; do
     lang="$(lang_of "$f")"
     FILES["$lang"]+="$f"$'\n'
-  done < <(find "$s" \( -name .git -o -name graft -o -name node_modules -o -name bin -o -name obj \) -prune \
+  done < <(find "$s" \( -name .git -o -name graft -o -name node_modules -o -name bin -o -name obj -o -name tmp \) -prune \
     -o -type f \( -name '*.cs' -o -name '*.java' -o -name '*.py' -o -name '*.js' -o -name '*.mjs' \
     -o -name '*.cjs' -o -name '*.ts' \) ! -name '*.d.ts' -print0)
 done

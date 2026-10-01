@@ -49,7 +49,7 @@ for target in "$@"; do
   if [[ -d "$target" ]]; then
     while IFS= read -r -d '' f; do
       fix_file "$f"
-    done < <(find "$target" -type f -name 'README.md' -print0 | sort -z)
+    done < <(find "$target" \( -name .git -o -name graft -o -name node_modules -o -name tmp \) -prune -o -type f -name 'README.md' -print0 | sort -z)
   elif [[ -f "$target" ]]; then
     fix_file "$target"
   else

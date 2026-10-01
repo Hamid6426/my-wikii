@@ -112,7 +112,7 @@ if ((${#scopes[@]} == 1)) && [[ -f "${scopes[0]}" ]]; then
   exit 0
 fi
 
-PRUNE=(\( -name .git -o -name graft -o -name node_modules -o -name bin -o -name obj \) -prune)
+PRUNE=(\( -name .git -o -name graft -o -name node_modules -o -name bin -o -name obj -o -name tmp \) -prune)
 CODE=(\( -name '*.cs' -o -name '*.java' -o -name '*.py' -o -name '*.js' -o -name '*.mjs' -o -name '*.cjs'
   -o -name '*.ts' \))
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Create the next numbered lesson in a language folder and add it to the Lessons table.
 # Usage: ./scripts/new-lesson.sh <lang> "<Title>"
-#   lang:  html css javascript typescript csharp java python
+#   lang:  html-and-css javascript typescript csharp java python
 #          (also accepted as langs/<lang> or wiki/langs/<lang>)
 #   Title: the lesson title, used for the H1, the file name and the table row
 #   WIKI_ROOT: override the wiki folder (default: <repo>/wiki). When set, sync-tags.sh is not run.
@@ -13,7 +13,7 @@ export LC_ALL=C
 ROOT="$(CDPATH= cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WIKI="${WIKI_ROOT:-$ROOT/wiki}"
 README_NAME="README.md"
-LANGS=(html css javascript typescript csharp java python)
+LANGS=(html-and-css javascript typescript csharp java python)
 
 die() {
   echo "new-lesson: $*" >&2

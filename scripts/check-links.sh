@@ -118,7 +118,7 @@ for target in "${targets[@]}"; do
   if [[ -d "$target" ]]; then
     while IFS= read -r -d '' f; do
       check_file "$f"
-    done < <(find "$target" \( -name .git -o -name graft -o -name node_modules \) -prune \
+    done < <(find "$target" \( -name .git -o -name graft -o -name node_modules -o -name tmp \) -prune \
       -o -type f -name '*.md' -print0 | sort -z)
   else
     check_file "$target"
