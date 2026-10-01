@@ -373,11 +373,7 @@ A mutex name has a scope:
 
 This was tested on Linux: two copies started from different sessions (with `setsid`) both reported they created a plain-named mutex, so neither saw the other. With the `Global\` prefix the second copy saw it and got `createdNew` as `false`.
 
-For a "only one copy" check, use a `Global\` name:
-
-```csharp
-using var mutex = new Mutex(initiallyOwned: true, @"Global\my-unique-app-name", out bool createdNew);
-```
+For an "only one copy" check, use a `Global\` name, as in the first example above.
 
 ---
 

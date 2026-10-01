@@ -1,6 +1,6 @@
 # C#
 
-Tags: `csharp` `languages`
+Tags: `csharp` `langs`
 
 Notes for learning C#, the language and the .NET base library, in 64 short lessons. Start with [Getting Started](01_getting_started.md). Each lesson is one topic, most have a runnable [example](examples/README.md), and the [Glossary](64_glossary.md) explains the terms.
 

@@ -1,6 +1,6 @@
 # CSS
 
-Tags: `css` `languages`
+Tags: `css` `langs`
 
 Style language for layout, spacing, color, and responsive design on the web.
 
@@ -10,4 +10,4 @@ _No pages yet._
 
 ## Related
 
-- [Wiki home](../README.md)
+- [Wiki home](../../README.md)

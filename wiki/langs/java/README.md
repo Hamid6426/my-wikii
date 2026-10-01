@@ -1,6 +1,6 @@
 # Java
 
-Tags: `java` `languages`
+Tags: `java` `langs`
 
 Statically typed, object-oriented language that runs on the JVM.
 
@@ -10,4 +10,4 @@ _No pages yet._
 
 ## Related
 
-- [Wiki home](../README.md)
+- [Wiki home](../../README.md)

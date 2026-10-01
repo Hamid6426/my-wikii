@@ -1,6 +1,6 @@
 # JavaScript
 
-Tags: `javascript` `languages`
+Tags: `javascript` `langs`
 
 The scripting language of the web, also used on servers with Node.js.
 
@@ -10,4 +10,4 @@ _No pages yet._
 
 ## Related
 
-- [Wiki home](../README.md)
+- [Wiki home](../../README.md)

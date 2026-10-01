@@ -1,6 +1,6 @@
 # Top Interview 150
 
-Tags: `algorithms` `csharp` `languages`
+Tags: `algorithms` `csharp` `langs`
 
 LeetCode's Top Interview 150, grouped by topic in the order LeetCode lists them. Solve each one in C# and tick the box when done. Put runnable solutions in [`../examples/`](../examples).
 

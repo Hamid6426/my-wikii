@@ -1,6 +1,6 @@
 # HELLO WORLD
 
-Tags: `01_hello_world` `java` `languages`
+Tags: `01_hello_world` `java` `langs`
 
 ## Intro
 

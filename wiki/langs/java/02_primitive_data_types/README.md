@@ -1,6 +1,6 @@
 # PRIMITIVE DATA TYPES
 
-Tags: `02_primitive_data_types` `java` `languages`
+Tags: `02_primitive_data_types` `java` `langs`
 
 ## Intro
 

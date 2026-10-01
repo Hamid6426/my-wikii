@@ -1,6 +1,6 @@
 # HTML
 
-Tags: `html` `languages`
+Tags: `html` `langs`
 
 Markup language for the structure and meaning of web pages.
 
@@ -10,4 +10,4 @@ _No pages yet._
 
 ## Related
 
-- [Wiki home](../README.md)
+- [Wiki home](../../README.md)

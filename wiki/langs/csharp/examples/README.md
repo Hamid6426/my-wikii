@@ -1,6 +1,6 @@
 # C# Examples
 
-Tags: `csharp` `examples`
+Tags: `csharp` `examples` `langs`
 
 Small runnable programs for the lessons in this folder. Each one is a single `.cs` file.
 

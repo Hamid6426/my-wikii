@@ -1,6 +1,6 @@
 # TypeScript
 
-Tags: `languages` `typescript`
+Tags: `langs` `typescript`
 
 JavaScript with static types. Compiles down to plain JavaScript.
 
@@ -10,4 +10,4 @@ _No pages yet._
 
 ## Related
 
-- [Wiki home](../README.md)
+- [Wiki home](../../README.md)

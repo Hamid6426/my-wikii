@@ -1,6 +1,6 @@
 # Python
 
-Tags: `languages` `python`
+Tags: `langs` `python`
 
 General-purpose language used for scripting, automation, data work, and backends.
 
@@ -10,4 +10,4 @@ _No pages yet._
 
 ## Related
 
-- [Wiki home](../README.md)
+- [Wiki home](../../README.md)
