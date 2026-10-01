@@ -1,0 +1,1 @@
+No examples for 07_variables_and_constants.md

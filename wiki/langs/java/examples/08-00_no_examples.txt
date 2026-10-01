@@ -1,0 +1,1 @@
+No examples for 08_primitive_data_types.md
