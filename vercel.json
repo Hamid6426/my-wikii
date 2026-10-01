@@ -1,0 +1,6 @@
+{
+  "buildCommand": "./scripts/build-web.sh",
+  "outputDirectory": "web",
+  "framework": null,
+  "cleanUrls": true
+}
