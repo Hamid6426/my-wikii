@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Hamid Wiki</title>
+  <meta
+    name="description"
+    content="Personal software engineering notes and learning resources."
+  >
+
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+  <div class="app">
+
+    <header class="topbar">
+      <a class="brand" href="?" aria-label="Hamid Wiki home">
+        <span class="brand-mark">{ }</span>
+        <span>Hamid Wiki</span>
+      </a>
+
+      <div class="topbar-actions">
+        <button
+          id="search-button"
+          class="search-trigger"
+          type="button"
+          aria-label="Search wiki"
+        >
+          <span>Search</span>
+          <kbd>⌘ K</kbd>
+        </button>
+
+        <button
+          id="theme-button"
+          class="icon-button"
+          type="button"
+          aria-label="Toggle theme"
+          title="Toggle theme"
+        >
+          ☼
+        </button>
+      </div>
+    </header>
+
+    <div class="layout">
+
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <span class="eyebrow">Learning</span>
+          <h2>Wiki</h2>
+        </div>
+
+        <nav id="lesson-nav" class="lesson-nav">
+          <div class="loading">Loading lessons...</div>
+        </nav>
+      </aside>
+
+      <main class="main">
+
+        <div id="breadcrumbs" class="breadcrumbs">
+          <a href="?">Home</a>
+          <span>/</span>
+          <span>C#</span>
+        </div>
+
+        <article id="content" class="content">
+          <div class="loading-page">
+            <div class="spinner"></div>
+            <p>Loading the wiki...</p>
+          </div>
+        </article>
+
+        <footer class="page-footer">
+          <div id="page-navigation" class="page-navigation"></div>
+
+          <div class="footer-meta">
+            <span>Hamid Wiki</span>
+            <span>·</span>
+            <span>Learning software engineering</span>
+          </div>
+        </footer>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Search dialog -->
+  <dialog id="search-dialog" class="search-dialog">
+    <div class="search-box">
+
+      <div class="search-header">
+        <strong>Search the wiki</strong>
+
+        <button
+          id="search-close"
+          class="icon-button"
+          type="button"
+          aria-label="Close search"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="search-input-wrapper">
+        <span class="search-icon">⌕</span>
+
+        <input
+          id="search-input"
+          type="search"
+          placeholder="Search lessons, concepts, code..."
+          autocomplete="off"
+          spellcheck="false"
+        >
+
+        <kbd>ESC</kbd>
+      </div>
+
+      <div id="search-status" class="search-status">
+        Type to search the wiki.
+      </div>
+
+      <div id="search-results" class="search-results"></div>
+
+    </div>
+  </dialog>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"
+  ></script>
+
+  <script src="./wiki-data.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
