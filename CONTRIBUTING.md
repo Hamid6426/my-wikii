@@ -19,7 +19,7 @@ learning-and-skills/
     ├── README.md
     ├── linux/
     ├── containers/
-    ├── html/  css/  javascript/  typescript/
+    ├── html-and-css/  javascript/  typescript/
     ├── csharp/  java/  python/
     └── ...
 ```
@@ -42,7 +42,7 @@ After adding or moving pages, run this from the repo root to refresh tags and th
 
 ## Language folders
 
-`html/`, `css/`, `javascript/`, `typescript/`, `csharp/`, `java/` and `python/` are courses, not reference trees. They use flat numbered lessons, modeled on `csharp/`:
+`html-and-css/`, `javascript/`, `typescript/`, `csharp/`, `java/` and `python/` are courses, not reference trees. They use flat numbered lessons, modeled on `csharp/`:
 
 - `README.md` is the index: a Lessons table linking every lesson in order.
 - Lessons are `NN_topic_name.md` (two digits, lowercase, underscores) directly in the language folder. No subfolders for lessons.
@@ -73,9 +73,17 @@ It does the following and nothing else:
 - Puts exactly one space after `#` in headings, after `1.` in numbered lists, and after `>` in quotes.
 - Turns `*` and `+` bullets into `-`.
 - Trims trailing spaces.
-- Leaves fenced code blocks untouched.
+- Aligns tables: pads every cell to the widest cell in its column so the pipes line up, and sizes the `---` row to match. `:---`, `:---:` and `---:` markers are kept.
+- Leaves fenced code blocks untouched, tables inside them included.
 
-It does not align tables or wrap lines.
+It does not wrap lines.
+
+### Table rules
+
+- A table row starts and ends with `|`.
+- A literal pipe in a cell is written `\|`.
+- Width is counted in characters, not bytes, so `©` and `→` count as one.
+- Rows with fewer cells than the header are padded with empty cells.
 
 ## Git ignore
 

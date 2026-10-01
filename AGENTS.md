@@ -20,7 +20,8 @@ A personal knowledge base of Markdown notes for learning software engineering. I
 Rules for writing pages are here and in `CONTRIBUTING.md`. Read them before editing anything under `wiki/`.
 
 - Folders classify, files do not. Every page is a `README.md` inside its folder, except language folders.
-- Language folders (`html`, `css`, `javascript`, `typescript`, `csharp`, `java`, `python`) use flat numbered lessons (`NN_topic_name.md`) with an `# NN - Title` H1 and a `README.md` index with a Lessons table. `csharp/` is the model. Example code goes in `examples/`.
+- Language folders (`html-and-css`, `javascript`, `typescript`, `csharp`, `java`, `python`) use flat numbered lessons (`NN_topic_name.md`) with an `# NN - Title` H1 and a `README.md` index with a Lessons table. `csharp/` is the model. Example code goes in `examples/`.
+- To add a lesson in the middle, run `scripts/insert-lesson.sh`. It backs the folder up to `wiki/langs/<lang>/tmp/` first, then renumbers the lessons from `NN` up and rewrites the H1s, links, example names and Lessons table. `tmp/` is a local cache: git-ignored and skipped by every check script. Restore with the command it prints.
 - Never create `something.md` topic files outside language folders (except `README.md` and tooling or config files).
 - New notes go in `.../topic-name/README.md`, linked from the parent index.
 - Docker lives under `containers/docker/`. Peer tools (Podman, runtimes, builders, desktop GUIs) are siblings under `containers/`. Linux host topics live under `linux/`.
@@ -52,6 +53,8 @@ Run these from the repo root.
 ./scripts/stats.sh           # page counts and thin pages
 ./scripts/new-page.sh <path> "<Title>"   # new topic page, linked from its parent
 ./scripts/new-lesson.sh <lang> "<Title>" # next numbered lesson in a language folder
+./scripts/insert-lesson.sh <lang> <NN> "<Title>"  # insert a lesson at NN and renumber the rest
+./scripts/backup-lang.sh <lang>          # copy a language folder to wiki/langs/<lang>/tmp/
 ```
 
 ## Do not

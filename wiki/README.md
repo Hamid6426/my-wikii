@@ -10,14 +10,12 @@ Personal knowledge base for notes, references, and quick look-ups.
 | -------------------------------------------- | --------------------------------------------------------------------------- |
 | [Linux](linux/README.md)                     | Distros, desktops, accounts, shells, systemd, networking, resources, kernel |
 | [Containers](containers/README.md)           | Docker, Podman, runtimes, OCI builders, desktop interfaces                  |
-| [Foundations](foundations/README.md)         | Language-independent basics: logic, conditions, problem solving             |
-| [HTML](langs/html/README.md)             | Structure and semantics of web pages                                        |
-| [CSS](langs/css/README.md)               | Layout, styling, responsive design                                          |
-| [JavaScript](langs/javascript/README.md) | Language core, browser, Node.js                                             |
-| [TypeScript](langs/typescript/README.md)           | Static types on top of JavaScript                                           |
-| [C#](langs/csharp/README.md)             | Language basics through LINQ, async, DI, testing                            |
-| [Java](langs/java/README.md)             | Language basics, JVM, algorithms                                            |
-| [Python](langs/python/README.md)         | Scripting, automation, backends                                             |
+| [HTML and CSS](langs/html-and-css/README.md) | Structure and semantics of web pages, styling, layout, responsive design    |
+| [JavaScript](langs/javascript/README.md)     | Language core, browser, Node.js                                             |
+| [TypeScript](langs/typescript/README.md)     | Static types on top of JavaScript                                           |
+| [C#](langs/csharp/README.md)                 | Language basics through LINQ, async, DI, testing                            |
+| [Java](langs/java/README.md)                 | Language basics, JVM, algorithms                                            |
+| [Python](langs/python/README.md)             | Scripting, automation, backends                                             |
 
 ## Engineering foundations roadmap
 
@@ -55,12 +53,10 @@ Language archives: [C# Learning](https://www.github.com/Hamid64266426/csharp-lea
 ```
 wiki/
 ├── README.md
-├── foundations/
 ├── notes/
 ├── langs/
 │   ├── csharp/
-│   ├── css/
-│   ├── html/
+│   ├── html-and-css/
 │   ├── java/
 │   ├── javascript/
 │   ├── python/
@@ -235,14 +231,6 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 ### By tag
 
-#### `01_hello_world`
-
-- [HELLO WORLD](langs/java/01_hello_world/README.md)
-
-#### `02_primitive_data_types`
-
-- [PRIMITIVE DATA TYPES](langs/java/02_primitive_data_types/README.md)
-
 #### `accounts`
 
 - [Accounts](linux/accounts/README.md)
@@ -258,6 +246,7 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 #### `algorithms`
 
 - [Top Interview 150](langs/csharp/algorithms/README.md)
+- [Top Interview 150](langs/java/algorithms/README.md)
 
 #### `alpine`
 
@@ -434,10 +423,6 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 - [C#](langs/csharp/README.md)
 - [C# Examples](langs/csharp/examples/README.md)
 - [Top Interview 150](langs/csharp/algorithms/README.md)
-
-#### `css`
-
-- [CSS](langs/css/README.md)
 
 #### `daemonless`
 
@@ -636,6 +621,7 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 #### `examples`
 
 - [C# Examples](langs/csharp/examples/README.md)
+- [Java Examples](langs/java/examples/README.md)
 
 #### `exec`
 
@@ -731,9 +717,9 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 - [Healthchecks](containers/docker/cli/healthchecks/README.md)
 
-#### `html`
+#### `html-and-css`
 
-- [HTML](langs/html/README.md)
+- [HTML and CSS](langs/html-and-css/README.md)
 
 #### `hyprland`
 
@@ -793,9 +779,9 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 #### `java`
 
-- [HELLO WORLD](langs/java/01_hello_world/README.md)
 - [Java](langs/java/README.md)
-- [PRIMITIVE DATA TYPES](langs/java/02_primitive_data_types/README.md)
+- [Java Examples](langs/java/examples/README.md)
+- [Top Interview 150](langs/java/algorithms/README.md)
 
 #### `javascript`
 
@@ -841,14 +827,13 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 - [C#](langs/csharp/README.md)
 - [C# Examples](langs/csharp/examples/README.md)
-- [CSS](langs/css/README.md)
-- [HELLO WORLD](langs/java/01_hello_world/README.md)
-- [HTML](langs/html/README.md)
+- [HTML and CSS](langs/html-and-css/README.md)
 - [Java](langs/java/README.md)
+- [Java Examples](langs/java/examples/README.md)
 - [JavaScript](langs/javascript/README.md)
-- [PRIMITIVE DATA TYPES](langs/java/02_primitive_data_types/README.md)
 - [Python](langs/python/README.md)
 - [Top Interview 150](langs/csharp/algorithms/README.md)
+- [Top Interview 150](langs/java/algorithms/README.md)
 - [TypeScript](langs/typescript/README.md)
 
 #### `lifecycle`
