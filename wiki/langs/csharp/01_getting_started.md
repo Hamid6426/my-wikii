@@ -75,6 +75,31 @@ dotnet --info            # full details about your setup
 
 ---
 
+## Windows: Installer and PATH
+
+Use this when you prefer the installer to `winget`.
+
+1. On the download page, pick the LTS SDK for your OS and download the installer
+2. Check the file against the checksum shown on the page (PowerShell):
+
+```powershell
+Get-FileHash $HOME\Downloads\dotnet-sdk-10.0.100-win-x64.exe -Algorithm SHA512
+```
+
+The hash is not case sensitive. If it matches the page, the download is intact.
+
+3. Run the installer with the defaults, then open a new terminal and run `dotnet --version`
+4. The installer adds `C:\Program Files\dotnet` to `Path`. If the command is still not found, press the Windows key, search "Environment Variables", choose "Edit the system environment variables", then "Environment Variables", edit `Path` under System variables, and add that folder
+5. Open a new terminal and check:
+
+```powershell
+where.exe dotnet
+```
+
+It prints the path to `dotnet.exe`.
+
+---
+
 ## Your First Program
 
 ```bash
