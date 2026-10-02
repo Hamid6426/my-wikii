@@ -10,12 +10,12 @@ Personal knowledge base for notes, references, and quick look-ups.
 | -------------------------------------------- | --------------------------------------------------------------------------- |
 | [Linux](linux/README.md)                     | Distros, desktops, accounts, shells, systemd, networking, resources, kernel |
 | [Containers](containers/README.md)           | Docker, Podman, runtimes, OCI builders, desktop interfaces                  |
-| [HTML and CSS](langs/html-and-css/README.md) | Structure and semantics of web pages, styling, layout, responsive design    |
-| [JavaScript](langs/javascript/README.md)     | Language core, browser, Node.js                                             |
-| [TypeScript](langs/typescript/README.md)     | Static types on top of JavaScript                                           |
-| [C#](langs/csharp/README.md)                 | Language basics through LINQ, async, DI, testing                            |
-| [Java](langs/java/README.md)                 | Language basics, JVM, algorithms                                            |
-| [Python](langs/python/README.md)             | Scripting, automation, backends                                             |
+| [HTML and CSS](../langs/html-and-css/README.md) | Structure and semantics of web pages, styling, layout, responsive design    |
+| [JavaScript](../langs/javascript/README.md)     | Language core, browser, Node.js                                             |
+| [TypeScript](../langs/typescript/README.md)     | Static types on top of JavaScript                                           |
+| [C#](../langs/csharp/README.md)                 | Language basics through LINQ, async, DI, testing                            |
+| [Java](../langs/java/README.md)                 | Language basics, JVM, algorithms                                            |
+| [Python](../langs/python/README.md)             | Scripting, automation, backends                                             |
 
 ## Engineering foundations roadmap
 
@@ -51,16 +51,16 @@ Language archives: [C# Learning](https://www.github.com/Hamid64266426/csharp-lea
 ## Structure
 
 ```
+langs/                       # language courses, outside wiki/
+├── csharp/
+├── html-and-css/
+├── java/
+├── javascript/
+├── python/
+└── typescript/
 wiki/
 ├── README.md
 ├── notes/
-├── langs/
-│   ├── csharp/
-│   ├── html-and-css/
-│   ├── java/
-│   ├── javascript/
-│   ├── python/
-│   └── typescript/
 ├── linux/
 │   ├── accounts/            # root, users, groups, sudo
 │   ├── desktop-environments/
@@ -245,8 +245,8 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 #### `algorithms`
 
-- [Top Interview 150](langs/csharp/algorithms/README.md)
-- [Top Interview 150](langs/java/algorithms/README.md)
+- [Top Interview 150](../langs/csharp/algorithms/README.md)
+- [Top Interview 150](../langs/java/algorithms/README.md)
 
 #### `alpine`
 
@@ -420,9 +420,9 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 #### `csharp`
 
-- [C#](langs/csharp/README.md)
-- [C# Examples](langs/csharp/examples/README.md)
-- [Top Interview 150](langs/csharp/algorithms/README.md)
+- [C#](../langs/csharp/README.md)
+- [C# Examples](../langs/csharp/examples/README.md)
+- [Top Interview 150](../langs/csharp/algorithms/README.md)
 
 #### `daemonless`
 
@@ -620,8 +620,8 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 #### `examples`
 
-- [C# Examples](langs/csharp/examples/README.md)
-- [Java Examples](langs/java/examples/README.md)
+- [C# Examples](../langs/csharp/examples/README.md)
+- [Java Examples](../langs/java/examples/README.md)
 
 #### `exec`
 
@@ -719,7 +719,7 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 #### `html-and-css`
 
-- [HTML and CSS](langs/html-and-css/README.md)
+- [HTML and CSS](../langs/html-and-css/README.md)
 
 #### `hyprland`
 
@@ -779,13 +779,13 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 #### `java`
 
-- [Java](langs/java/README.md)
-- [Java Examples](langs/java/examples/README.md)
-- [Top Interview 150](langs/java/algorithms/README.md)
+- [Java](../langs/java/README.md)
+- [Java Examples](../langs/java/examples/README.md)
+- [Top Interview 150](../langs/java/algorithms/README.md)
 
 #### `javascript`
 
-- [JavaScript](langs/javascript/README.md)
+- [JavaScript](../langs/javascript/README.md)
 
 #### `kaniko`
 
@@ -825,16 +825,16 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 #### `langs`
 
-- [C#](langs/csharp/README.md)
-- [C# Examples](langs/csharp/examples/README.md)
-- [HTML and CSS](langs/html-and-css/README.md)
-- [Java](langs/java/README.md)
-- [Java Examples](langs/java/examples/README.md)
-- [JavaScript](langs/javascript/README.md)
-- [Python](langs/python/README.md)
-- [Top Interview 150](langs/csharp/algorithms/README.md)
-- [Top Interview 150](langs/java/algorithms/README.md)
-- [TypeScript](langs/typescript/README.md)
+- [C#](../langs/csharp/README.md)
+- [C# Examples](../langs/csharp/examples/README.md)
+- [HTML and CSS](../langs/html-and-css/README.md)
+- [Java](../langs/java/README.md)
+- [Java Examples](../langs/java/examples/README.md)
+- [JavaScript](../langs/javascript/README.md)
+- [Python](../langs/python/README.md)
+- [Top Interview 150](../langs/csharp/algorithms/README.md)
+- [Top Interview 150](../langs/java/algorithms/README.md)
+- [TypeScript](../langs/typescript/README.md)
 
 #### `lifecycle`
 
@@ -1144,7 +1144,7 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 #### `python`
 
-- [Python](langs/python/README.md)
+- [Python](../langs/python/README.md)
 
 #### `rancher-desktop`
 
@@ -1345,7 +1345,7 @@ Each page has a `Tags:` line under the title. Path folders become tags; pages ma
 
 #### `typescript`
 
-- [TypeScript](langs/typescript/README.md)
+- [TypeScript](../langs/typescript/README.md)
 
 #### `ubuntu`
 

@@ -204,7 +204,7 @@ The jar (or runtime folder) is the deliverable. How it gets to a machine is sepa
 | ----------------------- | ------------------------------------------------------------------------------------------------- |
 | Copy files              | `scp app.jar user@server:/opt/app/` and run `java -jar app.jar`                                   |
 | Run as a service        | A systemd unit on Linux, or a Windows Service                                                     |
-| Container               | Copy the jar into an image with a JRE and run it. See [Docker](../../containers/docker/README.md) |
+| Container               | Copy the jar into an image with a JRE and run it. See [Docker](../../wiki/containers/docker/README.md) |
 | Cloud app services      | Upload the jar, or connect a git repository                                                       |
 | Share with other people | A `jpackage` installer per OS                                                                     |
 

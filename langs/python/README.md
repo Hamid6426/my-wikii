@@ -10,4 +10,4 @@ _No pages yet._
 
 ## Related
 
-- [Wiki home](../../README.md)
+- [Wiki home](../../wiki/README.md)

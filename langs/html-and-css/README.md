@@ -54,4 +54,4 @@ Notes for learning HTML, the markup language for the structure and meaning of we
 
 ## Related
 
-- [Wiki home](../../README.md)
+- [Wiki home](../../wiki/README.md)

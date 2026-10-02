@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run every repo check and fix step in order. Stops at the end with a summary.
 # Usage: ./scripts/check.sh [--no-fix] [path...]
-#   path: a folder or file to limit every step to (wiki/, wiki/linux, wiki/linux/README.md). Default: whole repo.
+#   path: a folder or file to limit every step to (wiki/, langs/, wiki/linux/README.md). Default: whole repo.
 #   --no-fix: skip the steps that rewrite files (fix-encoding, format, sync-tags)
 set -uo pipefail
 
@@ -15,7 +15,7 @@ if [[ "${1:-}" == "--no-fix" ]]; then
 fi
 scope=("$@")
 wiki_scope=("${scope[@]}")
-((${#wiki_scope[@]} == 0)) && wiki_scope=(wiki/)
+((${#wiki_scope[@]} == 0)) && wiki_scope=(wiki/ langs/)
 
 failed=()
 

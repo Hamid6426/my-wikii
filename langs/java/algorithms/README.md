@@ -304,4 +304,4 @@ Solved: 0 / 150. Goal: share the LeetCode profile at 100+ solved.
 ## Related
 
 - [Java lessons](../README.md)
-- [Wiki home](../../../README.md)
+- [Wiki home](../../../wiki/README.md)

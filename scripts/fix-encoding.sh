@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # Repair mojibake in wiki markdown (UTF-8 text that was decoded as CP1252 and saved again).
 # Usage: ./scripts/fix-encoding.sh [path...]
-#   path: a README.md file or a folder (all README.md files under it). Default: wiki/
+#   path: a README.md file or a folder (all README.md files under it). Default: wiki/ and langs/
 # Examples: ./scripts/fix-encoding.sh   ./scripts/fix-encoding.sh wiki/linux   ./scripts/fix-encoding.sh wiki/linux/README.md
 # Works line by line: a line is repaired only if re-encoding it as CP1252 succeeds
 # and the result is valid UTF-8. Clean lines are left alone.
 set -euo pipefail
 export LC_ALL=C
 
-ROOT="$(CDPATH= cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/wiki"
+REPO="$(CDPATH= cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$REPO/wiki"
 
 command -v iconv >/dev/null || { echo "iconv is required" >&2; exit 1; }
 
@@ -44,7 +45,7 @@ fix_file() {
 
 fixed=0
 status=0
-(($# == 0)) && set -- "$ROOT"
+(($# == 0)) && set -- "$ROOT" "$REPO/langs"
 for target in "$@"; do
   if [[ -d "$target" ]]; then
     while IFS= read -r -d '' f; do

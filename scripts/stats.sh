@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Print wiki statistics: pages, lessons, lines and example files per topic, then thin pages and totals.
 # Usage: ./scripts/stats.sh [path...]
-#   path: a folder (wiki/, wiki/langs, wiki/langs/csharp) or a single .md page,
-#         relative to the repo root or cwd, or absolute. No path means all of wiki/.
+#   path: a folder (wiki/, langs, langs/csharp) or a single .md page,
+#         relative to the repo root or cwd, or absolute. No path means wiki/ and langs/.
 #   A single file prints its own line count and thin-page verdict.
 # Thin page: a README.md or lesson with fewer than THIN_MIN non-blank lines. Read-only.
 set -euo pipefail
@@ -44,8 +44,8 @@ topic_of() {
   local r="$1" rest
   case "$r" in
     wiki/README.md) echo "wiki (index)" ;;
-    wiki/langs/*/*)
-      rest="${r#wiki/langs/}"
+    langs/*/*)
+      rest="${r#langs/}"
       echo "langs/${rest%%/*}"
       ;;
     wiki/*/*)
@@ -60,8 +60,8 @@ topic_of() {
 # is_lesson <rel-path>: a numbered lesson file (langs/<lang>/NN_x.md) or folder (langs/<lang>/NN_x/README.md).
 is_lesson() {
   local r="$1" rest
-  [[ "$r" == wiki/langs/*/* ]] || return 1
-  rest="${r#wiki/langs/*/}"
+  [[ "$r" == langs/*/* ]] || return 1
+  rest="${r#langs/*/}"
   if [[ "$rest" != */* ]]; then
     [[ "$rest" =~ $LESSON_RE && "$rest" == *.md ]]
   else
@@ -88,7 +88,7 @@ verdict() {
 
 scopes=()
 if (($# == 0)); then
-  scopes=("$ROOT/wiki")
+  scopes=("$ROOT/wiki" "$ROOT/langs")
 else
   for arg in "$@"; do
     if ! p="$(resolve "$arg")"; then

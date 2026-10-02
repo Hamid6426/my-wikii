@@ -2,10 +2,10 @@
 # Insert a new numbered lesson in a language folder and renumber the lessons after it.
 # Usage: ./scripts/insert-lesson.sh <lang> <NN> "<Title>"
 #   lang:  html-and-css javascript typescript csharp java python
-#          (also accepted as langs/<lang> or wiki/langs/<lang>)
+#          (also accepted as langs/<lang> or langs/<lang>)
 #   NN:    the position to insert at, two digits, 01 to <highest lesson + 1>
 #   Title: the lesson title, used for the H1, the file name and the README row
-# Creates wiki/langs/<lang>/NN_topic_name.md with just the H1, shifts every lesson from
+# Creates langs/<lang>/NN_topic_name.md with just the H1, shifts every lesson from
 # NN upward by one, and rewrites the H1s, links, example file names and README table.
 # Backs up the folder first (see backup-lang.sh). Run it again to insert a second lesson.
 # WIKI_ROOT overrides the wiki folder (default: <repo>/wiki).
@@ -15,6 +15,7 @@ shopt -s nullglob
 
 ROOT="$(CDPATH= cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WIKI="${WIKI_ROOT:-$ROOT/wiki}"
+LANGS_ROOT="${LANGS_ROOT:-$(dirname "$WIKI")/langs}"
 README_NAME="README.md"
 LANGS=(html-and-css javascript typescript csharp java python)
 
@@ -58,9 +59,9 @@ title="${title%"${title##*[![:space:]]}"}"
 slug="$(tr '[:upper:]' '[:lower:]' <<<"$title" | sed -E 's/[^a-z0-9]+/_/g; s/^_+//; s/_+$//')"
 [[ -n "$slug" ]] || die "title has no letters or digits to build a file name from"
 
-dir="$WIKI/langs/$lang"
-[[ -d "$dir" ]] || die "language folder not found: wiki/langs/$lang"
-[[ -f "$dir/$README_NAME" ]] || die "language index not found: wiki/langs/$lang/$README_NAME"
+dir="$LANGS_ROOT/$lang"
+[[ -d "$dir" ]] || die "language folder not found: langs/$lang"
+[[ -f "$dir/$README_NAME" ]] || die "language index not found: langs/$lang/$README_NAME"
 
 # Collect the existing lessons: highest number, and the slug of each number.
 declare -A slug_of=()
@@ -72,13 +73,13 @@ for f in "$dir"/[0-9][0-9]_*.md; do
   slug_of["$n"]="${slug_of["$n"]%.md}"
   ((n > max)) && max=$n
 done
-((max > 0)) || die "no numbered lessons found in wiki/langs/$lang"
+((max > 0)) || die "no numbered lessons found in langs/$lang"
 
 ((max < 99)) || die "lesson numbers are two digits and 99 is taken"
 ((pos >= 1 && pos <= max + 1)) || die "position $nn is out of range: use 01 to $(printf '%02d' $((max + 1)))"
 
 file="${nn}_${slug}.md"
-[[ ! -e "$dir/$file" ]] || die "already exists: wiki/langs/$lang/$file"
+[[ ! -e "$dir/$file" ]] || die "already exists: langs/$lang/$file"
 for f in "$dir"/[0-9][0-9]_"$slug".md; do
   die "a lesson with this name exists at another number: ${f##*/}"
 done
@@ -214,8 +215,8 @@ fi
 # 8. Align the tables.
 "$ROOT/scripts/format.sh" "$dir" >/dev/null
 
-echo "Inserted:   wiki/langs/$lang/$file"
+echo "Inserted:   langs/$lang/$file"
 echo "Renumbered: $shifts lesson(s) from $(printf '%02d' "$pos") upward"
-echo "Backup:     wiki/langs/$lang/tmp/"
+echo "Backup:     langs/$lang/tmp/"
 echo "Next:       write the lesson body, then add examples/${nn}-01_*.java or examples/${nn}-00_no_examples.txt"
 

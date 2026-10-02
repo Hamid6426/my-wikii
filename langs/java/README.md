@@ -104,4 +104,4 @@ A new lesson needs:
 
 ## Related
 
-- [Wiki home](../../README.md)
+- [Wiki home](../../wiki/README.md)

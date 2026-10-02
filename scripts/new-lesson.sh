@@ -2,16 +2,17 @@
 # Create the next numbered lesson in a language folder and add it to the Lessons table.
 # Usage: ./scripts/new-lesson.sh <lang> "<Title>"
 #   lang:  html-and-css javascript typescript csharp java python
-#          (also accepted as langs/<lang> or wiki/langs/<lang>)
+#          (also accepted as langs/<lang> or langs/<lang>)
 #   Title: the lesson title, used for the H1, the file name and the table row
 #   WIKI_ROOT: override the wiki folder (default: <repo>/wiki). When set, sync-tags.sh is not run.
 # Examples: ./scripts/new-lesson.sh csharp "Span and Memory"
-#           ./scripts/new-lesson.sh wiki/langs/python "List Comprehensions"
+#           ./scripts/new-lesson.sh langs/python "List Comprehensions"
 set -euo pipefail
 export LC_ALL=C
 
 ROOT="$(CDPATH= cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WIKI="${WIKI_ROOT:-$ROOT/wiki}"
+LANGS_ROOT="${LANGS_ROOT:-$(dirname "$WIKI")/langs}"
 README_NAME="README.md"
 LANGS=(html-and-css javascript typescript csharp java python)
 
@@ -40,10 +41,10 @@ for l in "${LANGS[@]}"; do
 done
 ((known)) || die "unknown language '$1'. Use one of: ${LANGS[*]}"
 
-dir="$WIKI/langs/$lang"
+dir="$LANGS_ROOT/$lang"
 readme="$dir/$README_NAME"
-[[ -d "$dir" ]] || die "language folder not found: wiki/langs/$lang"
-[[ -f "$readme" ]] || die "language index not found: wiki/langs/$lang/$README_NAME"
+[[ -d "$dir" ]] || die "language folder not found: langs/$lang"
+[[ -f "$readme" ]] || die "language index not found: langs/$lang/$README_NAME"
 
 title="${title#"${title%%[![:space:]]*}"}"
 title="${title%"${title##*[![:space:]]}"}"
@@ -65,13 +66,13 @@ done
 existing=("$dir"/[0-9][0-9]_"$slug".md)
 shopt -u nullglob
 
-((${#existing[@]} == 0)) || die "a lesson with this name already exists: wiki/langs/$lang/${existing[0]##*/}"
+((${#existing[@]} == 0)) || die "a lesson with this name already exists: langs/$lang/${existing[0]##*/}"
 ((max < 99)) || die "lesson numbers are two digits and 99 is taken"
 
 nn="$(printf '%02d' $((max + 1)))"
 file="${nn}_${slug}.md"
 lesson="$dir/$file"
-[[ ! -e "$lesson" ]] || die "already exists, not overwriting: wiki/langs/$lang/$file"
+[[ ! -e "$lesson" ]] || die "already exists, not overwriting: langs/$lang/$file"
 
 # Build the new README text. The row goes after the last row of the table under
 # `## Lessons`, padded to the widths of the separator row when the text fits.
@@ -137,8 +138,8 @@ awk -v nn="$nn" -v cell="[$title]($file)" '
 # Overwrite in place so file permissions are kept.
 cat "$tmp" >"$readme"
 
-echo "Created: wiki/langs/$lang/$file"
-echo "Edited:  wiki/langs/$lang/$README_NAME (added lesson $nn to the Lessons table)"
+echo "Created: langs/$lang/$file"
+echo "Edited:  langs/$lang/$README_NAME (added lesson $nn to the Lessons table)"
 
 if [[ -n "${WIKI_ROOT:-}" ]]; then
   echo "WIKI_ROOT is set, skipped scripts/sync-tags.sh"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Add Tags: lines to wiki pages and regenerate the table of contents inside wiki/README.md.
+# Add Tags: lines to wiki and language pages and regenerate the table of contents inside wiki/README.md.
 # Usage: ./scripts/sync-tags.sh [path...]
 #   path: a README.md file or a folder. Only pages inside the scope get their Tags: line
 #   rewritten; the table of contents in wiki/README.md always covers every page.
@@ -7,7 +7,9 @@
 set -euo pipefail
 export LC_ALL=C
 
-ROOT="$(CDPATH= cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/wiki"
+REPO="$(CDPATH= cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$REPO/wiki"
+LANGS_ROOT="$REPO/langs"
 README_NAME="README.md"
 README_SUFFIX="/$README_NAME"
 TOC_START="<!-- toc:start -->"
@@ -172,6 +174,23 @@ extra "$DESKTOP_INTERFACES_DIR" "oci desktop vm macos linux" colima
 extra "$DESKTOP_INTERFACES_DIR" "oci desktop vm macos" orbstack
 extra "$DESKTOP_INTERFACES_DIR" "oci desktop kubernetes" rancher-desktop
 
+# Page paths are relative to wiki/, except language pages, which are langs/<lang>/... under the repo root.
+# abs_of <rel>: the file for a page path.
+abs_of() {
+  case "$1" in
+    langs/*) printf '%s' "$LANGS_ROOT/${1#langs/}" ;;
+    *) printf '%s' "$ROOT/$1" ;;
+  esac
+}
+
+# link_of <rel>: the link to a page from wiki/README.md.
+link_of() {
+  case "$1" in
+    langs/*) printf '../%s' "$1" ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
 # tags_for <rel>: folder tags plus extras, unique, sorted case-insensitively.
 tags_for() {
   local rel="$1" folder
@@ -261,7 +280,11 @@ changed=0
 total=0
 
 while IFS= read -r -d '' path; do
-  rel="${path#"$ROOT"/}"
+  if [[ "$path" == "$LANGS_ROOT"/* ]]; then
+    rel="langs/${path#"$LANGS_ROOT"/}"
+  else
+    rel="${path#"$ROOT"/}"
+  fi
   tags="$(tags_for "$rel")"
   if ! grep -qE '^# [^[:space:]]' "$path"; then
     echo "skipped (no H1): $rel"
@@ -279,7 +302,9 @@ while IFS= read -r -d '' path; do
   folder="$(rel_folder "$rel")"
   key="0${folder//\//$'\x01'}"
   RECORDS+="${key}"$'\t'"${rel}"$'\t'"${tags}"$'\t'"$(title_of "$path")"$'\n'
-done < <(find "$ROOT" \( -name .git -o -name graft -o -name node_modules -o -name tmp \) -prune -o -type f -name "$README_NAME" -print0 | sort -z)
+done < <(
+  find "$ROOT" "$LANGS_ROOT" \( -name .git -o -name graft -o -name node_modules -o -name tmp \) -prune -o -type f -name "$README_NAME" -print0 | sort -z
+)
 
 RECORDS="$(printf '%s' "$RECORDS" | sort -t $'\t' -k1,1)"
 
@@ -305,7 +330,7 @@ emit_section() {
     fi
     pad=""
     for ((i = 0; i < depth; i++)); do pad+="  "; done
-    add "${pad}- [$title]($rel) - $(backtick_tags "$tags")"
+    add "${pad}- [$title]($(link_of "$rel")) - $(backtick_tags "$tags")"
   done <<<"$RECORDS"
   add ""
 }
@@ -326,7 +351,7 @@ while IFS= read -r tag; do
   add "#### \`$tag\`"
   add ""
   while IFS=$'\t' read -r _ rel title; do
-    add "- [$title]($rel)"
+    add "- [$title]($(link_of "$rel"))"
   done < <(
     while IFS=$'\t' read -r _ rel tags title; do
       case " $tags " in

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Syntax or compile check the example code in the wiki. Build output goes to a temp dir, never the repo.
 # Usage: ./scripts/check-examples.sh [path...]
-#   path: a folder (wiki/, wiki/langs, wiki/langs/csharp/examples) or a single example file
+#   path: a folder (wiki/, langs, langs/csharp/examples) or a single example file
 #         (.cs, .java, .py, .js, .ts), relative to the repo root or cwd, or absolute.
-#         No path means all of wiki/.
+#         No path means wiki/ and langs/.
 # Tools: dotnet (.cs), javac (.java), python3 (.py), node (.js), tsc (.ts).
 #   A missing tool skips that language and is not a failure.
 # Exit: 0 when everything checked passes, 1 on any failure or a missing path.
@@ -69,7 +69,7 @@ lang_of() {
 # Collect example files in scope.
 scopes=()
 if (($# == 0)); then
-  scopes=("$ROOT/wiki")
+  scopes=("$ROOT/wiki" "$ROOT/langs")
 else
   for arg in "$@"; do
     if ! p="$(resolve "$arg")"; then

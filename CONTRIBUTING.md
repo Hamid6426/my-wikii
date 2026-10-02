@@ -15,12 +15,13 @@ learning-and-skills/
 ├── CONTRIBUTING.md
 ├── AGENTS.md
 ├── scripts/
+├── langs/
+│   ├── html-and-css/  javascript/  typescript/
+│   └── csharp/  java/  python/
 └── wiki/
     ├── README.md
     ├── linux/
     ├── containers/
-    ├── html-and-css/  javascript/  typescript/
-    ├── csharp/  java/  python/
     └── ...
 ```
 

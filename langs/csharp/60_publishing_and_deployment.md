@@ -210,7 +210,7 @@ The output folder is the deliverable. How it gets to a machine is separate:
 | ----------------------- | ----------------------------------------------------------------------------------------- |
 | Copy files              | `scp -r out/ user@server:/opt/app/` and run `./App`                                       |
 | Run as a service        | A systemd unit on Linux, or a Windows Service                                             |
-| Container               | Copy the output into an image and run it. See [Docker](../../containers/docker/README.md) |
+| Container               | Copy the output into an image and run it. See [Docker](../../wiki/containers/docker/README.md) |
 | Cloud app services      | Upload the folder or a zip, or connect a git repository                                   |
 | Share with other people | Zip a self-contained single file per OS                                                   |
 

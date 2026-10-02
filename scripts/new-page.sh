@@ -6,7 +6,7 @@
 #   WIKI_ROOT: override the wiki folder (default: <repo>/wiki). When set, sync-tags.sh is not run.
 # Examples: ./scripts/new-page.sh linux/networking/dns "DNS"
 #           ./scripts/new-page.sh containers/podman/quadlet "Quadlet"
-# Lessons in language folders (wiki/langs/<lang>/) use ./scripts/new-lesson.sh instead.
+# Lessons in language folders (langs/<lang>/) use ./scripts/new-lesson.sh instead.
 set -euo pipefail
 export LC_ALL=C
 

@@ -8,7 +8,7 @@
  * The browser:
  *
  *   1. Loads wiki/README.md
- *   2. Follows every relative Markdown link under wiki/
+ *   2. Follows every relative link to a page in wiki/ or langs/
  *   3. Loads each Markdown page once
  *   4. Builds an in-memory search index
  *   5. Renders the selected page
@@ -18,13 +18,27 @@
  */
 
 const CONFIG = {
-  wikiRoot: "/wiki/",
+  wikiRoot: "/",
   indexFile: "/wiki/README.md",
+  homePage: "wiki/README.md",
 };
+
+/* Code files shown as pages, with the fence language for each. */
+const CODE_LANGUAGES = { ".cs": "csharp" };
+
+function codeLanguage(path) {
+  const dot = path.lastIndexOf(".");
+
+  return dot === -1 ? undefined : CODE_LANGUAGES[path.slice(dot)];
+}
 
 const state = {
   lessons: [],
   currentLessonIndex: -1,
+  tree: null,
+  sections: [],
+  currentSection: null,
+  sectionPages: [],
   searchResults: [],
   selectedSearchResult: 0,
 };
@@ -138,8 +152,8 @@ function setRoute(path) {
 
 /*
  * Turn a link found in a page into a wiki path
- * (relative to wiki/), or null if it is not a local
- * Markdown page under wiki/.
+ * (relative to the repo root), or null if it is not a
+ * local Markdown or code page.
  */
 function resolveWikiPath(href, fromPath) {
   if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith("#")) {
@@ -148,7 +162,7 @@ function resolveWikiPath(href, fromPath) {
 
   const clean = href.split("#")[0].split("?")[0];
 
-  if (!clean.endsWith(".md")) {
+  if (!clean.endsWith(".md") && !codeLanguage(clean)) {
     return null;
   }
 
@@ -180,7 +194,7 @@ function resolveWikiPath(href, fromPath) {
 async function fetchText(url) {
   /*
    * Opened from file://, fetch is blocked. scripts/build-web.sh
-   * writes wiki-data.js with every page, keyed by path under wiki/.
+   * writes wiki-data.js with every page, keyed by path from the repo root.
    */
   if (window.WIKI_DATA) {
     const key = url.slice(CONFIG.wikiRoot.length);
@@ -256,8 +270,24 @@ function fixMarkdownLinks(html, fromPath) {
 /* Load lessons */
 /* -------------------------------------------------- */
 
+/* A code file becomes a page: a heading and one code block. */
+function codeToMarkdown(path, code, language) {
+  const name = path.split("/").pop();
+  const longest = Math.max(
+    0,
+    ...(code.match(/`+/g) || []).map((run) => run.length)
+  );
+  const fence = "`".repeat(Math.max(3, longest + 1));
+
+  return `# ${name}\n\n${fence}${language}\n${code.replace(/\s+$/, "")}\n${fence}\n`;
+}
+
 async function loadPage(path) {
-  const markdown = await fetchText(`${CONFIG.wikiRoot}${path}`);
+  const language = codeLanguage(path);
+  const source = await fetchText(`${CONFIG.wikiRoot}${path}`);
+  const markdown = language
+    ? codeToMarkdown(path, source, language)
+    : source;
   const html = fixMarkdownLinks(marked.parse(markdown), path);
 
   const temporary = document.createElement("div");
@@ -266,9 +296,12 @@ async function loadPage(path) {
   return {
     path,
     number: getLessonNumber(path),
-    title: getTitleFromMarkdown(markdown, path),
+    title: language
+      ? path.split("/").pop().replace(/\.[^.]+$/, "").replace(/_/g, " ")
+      : getTitleFromMarkdown(markdown, path),
     group: getGroup(path),
     markdown,
+    links: [...findLinkedPaths(markdown, path)],
     html,
     plainText: temporary.textContent.replace(/\s+/g, " ").trim(),
   };
@@ -279,8 +312,8 @@ async function loadLessons() {
    * Breadth-first crawl from wiki/README.md. Each wave of
    * newly found pages is fetched in parallel.
    */
-  const seen = new Set(["README.md"]);
-  let wave = ["README.md"];
+  const seen = new Set([CONFIG.homePage]);
+  let wave = [CONFIG.homePage];
   const pages = [];
 
   while (wave.length > 0) {
@@ -309,75 +342,305 @@ async function loadLessons() {
   }
 
   if (pages.length === 0) {
-    throw new Error("No pages were found under wiki/.");
+    throw new Error("No pages were found.");
   }
 
   /*
-   * Sort by path so folders stay together. The root
-   * README stays first.
+   * Order pages as the sidebar tree shows them, so Previous and
+   * Next follow the same order.
    */
-  state.lessons = pages.sort((a, b) => {
-    if (a.path === "README.md") return -1;
-    if (b.path === "README.md") return 1;
-    return a.path.localeCompare(b.path, undefined, { numeric: true });
-  });
+  const tree = buildTree(pages);
 
-  renderNavigation();
+  state.lessons = [];
+  flattenTree(tree, state.lessons);
+
+  const indexByPath = new Map(
+    state.lessons.map((lesson, index) => [lesson.path, index])
+  );
+
+  state.tree = tree;
+  state.indexByPath = indexByPath;
+  state.sections = findSections(pages, tree);
+
   buildSearchIndex();
+  route();
+}
 
+/*
+ * The sections are the rows of the Topics table in wiki/README.md:
+ * | [Linux](linux/README.md) | Description |
+ */
+function findSections(pages, tree) {
+  const root = pages.find((page) => page.path === CONFIG.homePage);
+  const pattern = /^\|\s*\[([^\]]+)\]\(([^)]+\.md)\)\s*\|\s*([^|]*?)\s*\|/gm;
+  const sections = [];
+
+  let match;
+
+  while ((match = pattern.exec(root.markdown)) !== null) {
+    const path = resolveWikiPath(match[2], CONFIG.homePage);
+    const node = path && tree.folders.get(getGroup(path));
+
+    if (node) {
+      sections.push({
+        title: match[1].trim(),
+        description: match[3].trim(),
+        node,
+      });
+    }
+  }
+
+  return sections;
+}
+
+function sectionOf(page) {
+  let best = null;
+
+  for (const section of state.sections) {
+    const dir = section.node.dir;
+
+    if (
+      page.path.startsWith(`${dir}/`) &&
+      (!best || dir.length > best.node.dir.length)
+    ) {
+      best = section;
+    }
+  }
+
+  return best;
+}
+
+function route() {
   const requested = getRoute();
 
   const index = state.lessons.findIndex(
     (lesson) => lesson.path === requested
   );
 
-  showLesson(index !== -1 ? index : 0, false);
+  if (index !== -1 && requested !== CONFIG.homePage) {
+    showLesson(index, false);
+  } else {
+    showHome(false);
+  }
+}
+
+/* -------------------------------------------------- */
+/* Home */
+/* -------------------------------------------------- */
+
+function showHome(updateUrl = true) {
+  state.currentLessonIndex = -1;
+  state.currentSection = null;
+  state.sectionPages = [];
+
+  document.body.classList.add("is-home");
+
+  if (updateUrl) {
+    try {
+      const url = new URL(window.location.href);
+
+      url.searchParams.delete("page");
+      url.hash = "";
+
+      window.history.pushState({}, "", url);
+    } catch {
+      window.location.hash = "";
+    }
+  }
+
+  content.innerHTML = `
+    <h1>Hamid Wiki</h1>
+    <p>Pick a topic to start.</p>
+
+    <div class="topic-grid">
+      ${state.sections
+        .map((section, i) => `
+          <a
+            class="topic-card"
+            href="?page=${encodeURIComponent(section.node.page.path)}"
+            data-section="${i}"
+          >
+            <span class="topic-title">${escapeHtml(section.title)}</span>
+            <span class="topic-description">${escapeHtml(section.description)}</span>
+          </a>
+        `)
+        .join("")}
+    </div>
+  `;
+
+  breadcrumbs.innerHTML = "<span>Home</span>";
+  pageNavigation.innerHTML = "";
+  lessonNav.innerHTML = "";
+
+  document.title = "Hamid Wiki";
 }
 
 /* -------------------------------------------------- */
 /* Navigation */
 /* -------------------------------------------------- */
 
-function renderNavigation() {
-  let group = null;
-  let html = "";
+/*
+ * Folders become nodes {dir, page, children}. A page that is not a
+ * folder README becomes a leaf {page}. A node's page is its README.
+ */
+function buildTree(pages) {
+  const byPath = new Map(pages.map((page) => [page.path, page]));
+  const folders = new Map();
 
-  state.lessons.forEach((lesson, index) => {
-    if (lesson.group !== group) {
-      group = lesson.group;
-
-      html += `<div class="nav-group">${escapeHtml(
-        group || "Wiki"
-      )}</div>`;
+  function folder(dir) {
+    if (folders.has(dir)) {
+      return folders.get(dir);
     }
 
-    html += `
-      <a
-        class="lesson-link"
-        href="?page=${encodeURIComponent(lesson.path)}"
-        data-index="${index}"
-      >
-        ${
-          lesson.number
-            ? `<span class="lesson-number">${lesson.number}</span>`
-            : ""
-        }
-        <span>${escapeHtml(lesson.title)}</span>
-      </a>
-    `;
+    const node = {
+      dir,
+      page: byPath.get(dir ? `${dir}/README.md` : "README.md") || null,
+      children: [],
+    };
+
+    folders.set(dir, node);
+
+    if (dir) {
+      folder(getGroup(dir)).children.push(node);
+    }
+
+    return node;
+  }
+
+  const root = folder("");
+
+  for (const page of pages) {
+    if (page.path.endsWith("README.md")) {
+      folder(getGroup(page.path));
+    } else {
+      folder(getGroup(page.path)).children.push({ page });
+    }
+  }
+
+  sortTree(root);
+
+  root.folders = folders;
+
+  return root;
+}
+
+function nodeKey(node) {
+  return node.dir !== undefined
+    ? node.dir ? `${node.dir}/README.md` : "README.md"
+    : node.page.path;
+}
+
+/*
+ * Children follow the order of the links in the parent README
+ * (the tables you maintain). Anything it does not link comes
+ * after, sorted by name.
+ */
+function sortTree(node, inherited = new Map()) {
+  /* A folder without a README uses its parent's link order. */
+  const order = node.page
+    ? new Map(node.page.links.map((path, i) => [path, i]))
+    : inherited;
+
+  node.children.sort((a, b) => {
+    /* Numbered lessons come first, in number order. */
+    const na = a.dir === undefined && a.page.number;
+    const nb = b.dir === undefined && b.page.number;
+
+    if (na || nb) {
+      if (na && nb) {
+        return Number(na) - Number(nb);
+      }
+
+      return na ? -1 : 1;
+    }
+
+    const ia = order.get(nodeKey(a)) ?? Infinity;
+    const ib = order.get(nodeKey(b)) ?? Infinity;
+
+    if (ia !== ib) {
+      return ia < ib ? -1 : 1;
+    }
+
+    return nodeKey(a).localeCompare(nodeKey(b), undefined, {
+      numeric: true,
+    });
   });
 
-  lessonNav.innerHTML = html;
+  for (const child of node.children) {
+    if (child.dir !== undefined) {
+      sortTree(child, order);
+    }
+  }
+}
+
+function flattenTree(node, out) {
+  if (node.page) {
+    out.push(node.page);
+  }
+
+  for (const child of node.children) {
+    if (child.dir !== undefined) {
+      flattenTree(child, out);
+    } else {
+      out.push(child.page);
+    }
+  }
+}
+
+function renderNavigation(sectionNode) {
+  function link(page) {
+    return `
+      <a
+        class="lesson-link"
+        href="?page=${encodeURIComponent(page.path)}"
+        data-index="${state.indexByPath.get(page.path)}"
+      >
+        ${
+          page.number
+            ? `<span class="lesson-number">${page.number}</span>`
+            : ""
+        }
+        <span>${escapeHtml(page.title)}</span>
+      </a>
+    `;
+  }
+
+  function render(node) {
+    if (node.dir === undefined) {
+      return link(node.page);
+    }
+
+    const label = node.page
+      ? link(node.page)
+      : `<span class="nav-label">${escapeHtml(
+          getTitleFromPath(`${node.dir}/README.md`)
+        )}</span>`;
+
+    if (node.children.length === 0) {
+      return label;
+    }
+
+    return `
+      ${label}
+      <div class="nav-children">
+        ${node.children.map(render).join("")}
+      </div>
+    `;
+  }
+
+  lessonNav.innerHTML = render(sectionNode);
 }
 
 function updateActiveNavigation() {
   for (const link of lessonNav.querySelectorAll(".lesson-link")) {
     const index = Number(link.dataset.index);
+    const active = index === state.currentLessonIndex;
 
-    link.classList.toggle(
-      "active",
-      index === state.currentLessonIndex
-    );
+    link.classList.toggle("active", active);
+
+    if (active) {
+      link.scrollIntoView({ block: "nearest" });
+    }
   }
 }
 
@@ -393,6 +656,26 @@ function showLesson(index, updateUrl = true) {
   }
 
   state.currentLessonIndex = index;
+
+  document.body.classList.remove("is-home");
+
+  /*
+   * The sidebar and Previous/Next cover only the section
+   * (Linux, Containers or one language) this page is in.
+   */
+  const section = sectionOf(lesson);
+
+  if (section !== state.currentSection) {
+    state.currentSection = section;
+    state.sectionPages = [];
+
+    if (section) {
+      flattenTree(section.node, state.sectionPages);
+      renderNavigation(section.node);
+    } else {
+      lessonNav.innerHTML = "";
+    }
+  }
 
   if (updateUrl) {
     setRoute(lesson.path);
@@ -445,7 +728,7 @@ function showLesson(index, updateUrl = true) {
     : "";
 
   breadcrumbs.innerHTML = `
-    <a href="./">Home</a>
+    <a href="?">Home</a>
     <span>/</span>
     ${crumbs}
     <span>${escapeHtml(lesson.title)}</span>
@@ -460,14 +743,18 @@ function showLesson(index, updateUrl = true) {
 function renderPageNavigation() {
   const index = state.currentLessonIndex;
 
-  const previous = state.lessons[index - 1];
-  const next = state.lessons[index + 1];
+  const position = state.sectionPages.findIndex(
+    (page) => page === state.lessons[index]
+  );
+
+  const previous = state.sectionPages[position - 1];
+  const next = state.sectionPages[position + 1];
 
   const previousHtml = previous
     ? `
       <a
         class="page-nav-link"
-        href="?lesson=${encodeURIComponent(previous.path)}"
+        href="?page=${encodeURIComponent(previous.path)}"
         data-page-lesson="${previous.path}"
       >
         <span class="page-nav-label">Previous</span>
@@ -482,7 +769,7 @@ function renderPageNavigation() {
     ? `
       <a
         class="page-nav-link next"
-        href="?lesson=${encodeURIComponent(next.path)}"
+        href="?page=${encodeURIComponent(next.path)}"
         data-page-lesson="${next.path}"
       >
         <span class="page-nav-label">Next</span>
@@ -959,15 +1246,8 @@ document.addEventListener(
 window.addEventListener(
   "popstate",
   () => {
-    const path = getRoute();
-
-    const index = state.lessons.findIndex(
-      (lesson) =>
-        lesson.path === path
-    );
-
-    if (index !== -1) {
-      showLesson(index, false);
+    if (state.lessons.length > 0) {
+      route();
     }
   }
 );
@@ -998,6 +1278,26 @@ lessonNav.addEventListener(
     });
   }
 );
+
+/*
+ * Home links and topic cards.
+ */
+document.addEventListener("click", (event) => {
+  const home = event.target.closest('a[href="?"]');
+  const card = event.target.closest(".topic-card");
+
+  if (home) {
+    event.preventDefault();
+    showHome();
+  } else if (card) {
+    event.preventDefault();
+
+    const section = state.sections[Number(card.dataset.section)];
+
+    showLesson(state.indexByPath.get(section.node.page.path));
+    window.scrollTo({ top: 0 });
+  }
+});
 
 /*
  * Close dialog if the user clicks outside it.

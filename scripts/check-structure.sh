@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Check that the wiki follows the layout rules in AGENTS.md and CONTRIBUTING.md.
 # Usage: ./scripts/check-structure.sh [path...]
-#   path: a folder (wiki/, wiki/linux, wiki/langs/csharp) or a single file (wiki/linux/README.md),
-#         relative to the repo root or the current folder, or absolute. No path means all of wiki/.
+#   path: a folder (wiki/, wiki/linux, langs/csharp) or a single file (wiki/linux/README.md),
+#         relative to the repo root or the current folder, or absolute. No path means wiki/ and langs/.
 #   Only problems in files inside the given paths are printed. Parent and language README files
 #   are still read to decide whether a page or lesson is linked.
 #   WIKI_ROOT=<dir> overrides the wiki folder (default: <repo>/wiki), for testing on a copy.
-# Examples: ./scripts/check-structure.sh   ./scripts/check-structure.sh wiki/langs/csharp
+#   LANGS_ROOT=<dir> overrides the languages folder (default: <wiki>/../langs).
+# Examples: ./scripts/check-structure.sh   ./scripts/check-structure.sh langs/csharp
 # Checks:
 #   1. Outside language folders, every .md file is a README.md (no stray topic files).
 #   2. Every README.md has an H1 and a Tags: line right under it (one blank line allowed).
@@ -31,6 +32,17 @@ if [[ ! -d "$WIKI" ]]; then
   exit 1
 fi
 WIKI="$(CDPATH= cd "$WIKI" && pwd)"
+LANGS_ROOT="${LANGS_ROOT:-$(dirname "$WIKI")/langs}"
+
+# abs_of <rel>: absolute path of a page path. Paths starting with langs/ live in LANGS_ROOT,
+# everything else under the wiki ("" is the wiki root).
+abs_of() {
+  case "$1" in
+    "$LANGS_DIR") printf '%s' "$LANGS_ROOT" ;;
+    "$LANGS_DIR"/*) printf '%s' "$LANGS_ROOT/${1#"$LANGS_DIR"/}" ;;
+    *) printf '%s' "$WIKI${1:+/$1}" ;;
+  esac
+}
 
 # display <abs>: path relative to the repo root when inside it, else absolute.
 display() {
@@ -44,6 +56,7 @@ display() {
 SCOPES=()
 if (($# == 0)); then
   SCOPES=("$WIKI")
+  [[ -d "$LANGS_ROOT" ]] && SCOPES+=("$LANGS_ROOT")
 else
   status=0
   for arg in "$@"; do
@@ -65,8 +78,8 @@ else
       continue
     fi
     found="$(realpath -ms "$found")"
-    if [[ "$found" != "$WIKI" && "$found" != "$WIKI"/* ]]; then
-      echo "Not inside $(display "$WIKI"): $arg" >&2
+    if [[ "$found" != "$WIKI" && "$found" != "$WIKI"/* && "$found" != "$LANGS_ROOT" && "$found" != "$LANGS_ROOT"/* ]]; then
+      echo "Not inside $(display "$WIKI") or $(display "$LANGS_ROOT"): $arg" >&2
       status=1
       continue
     fi
@@ -91,7 +104,8 @@ in_scope() {
 PROBLEMS=()
 # problem <rel-to-wiki> <line> <message>
 problem() {
-  local abs="$WIKI${1:+/$1}"
+  local abs
+  abs="$(abs_of "$1")"
   in_scope "$abs" || return 0
   PROBLEMS+=("$(display "$abs"):$2: $3")
 }
@@ -147,6 +161,8 @@ link_targets() {
       }
       out = ""
       for (i = 1; i <= depth; i++) out = out (i > 1 ? "/" : "") stack[i]
+      # langs/ sits next to wiki/, so the wiki README links to it as ../langs/
+      if (out ~ /^\.\.\/langs(\/|$)/) out = substr(out, 4)
       if (out == "README.md") out = ""
       else sub(/\/README\.md$/, "", out)
       print out
@@ -167,7 +183,7 @@ link_targets() {
         line = substr(line, RSTART + RLENGTH)
       }
     }
-  ' "$WIKI/${1:+$1/}$README_NAME"
+  ' "$(abs_of "$1")/$README_NAME"
 }
 
 # Links found per README folder: LINKS["<readme-dir>"TAB"<target>"]=1
@@ -196,7 +212,7 @@ check_header() {
       if (!h) print "1\tmissing H1 (# Title)"
       else if (!ok) print (h + 1) "\tmissing Tags: line under the H1"
     }
-  ' "$WIKI/$rel")"
+  ' "$(abs_of "$rel")")"
   if [[ -n "$result" ]]; then
     problem "$rel" "${result%%$'\t'*}" "${result#*$'\t'}"
   fi
@@ -209,15 +225,15 @@ check_parent_link() {
   parent="$folder"
   while [[ -n "$parent" ]]; do
     parent="$(dir_of "$parent")"
-    [[ -f "$WIKI/${parent:+$parent/}$README_NAME" ]] && break
+    [[ -f "$(abs_of "$parent")/$README_NAME" ]] && break
   done
-  if [[ ! -f "$WIKI/${parent:+$parent/}$README_NAME" ]]; then
+  if [[ ! -f "$(abs_of "$parent")/$README_NAME" ]]; then
     problem "$rel" 1 "no parent $README_NAME to link this page from"
     return
   fi
   load_links "$parent"
   if [[ -z "${LINKS["$parent"$'\t'"$folder"]+x}" ]]; then
-    problem "$rel" 1 "not linked from $(display "$WIKI/${parent:+$parent/}$README_NAME")"
+    problem "$rel" 1 "not linked from $(display "$(abs_of "$parent")/$README_NAME")"
   fi
 }
 
@@ -226,7 +242,7 @@ check_language() {
   local lang="$1" entry name rel nn h1 i max=0
   local -A seen=()
   local has_readme=0
-  [[ -f "$WIKI/$lang/$README_NAME" ]] && has_readme=1
+  [[ -f "$(abs_of "$lang")/$README_NAME" ]] && has_readme=1
   ((has_readme)) && load_links "$lang"
 
   while IFS= read -r -d '' entry; do
@@ -264,11 +280,11 @@ check_language() {
     fi
 
     if ((has_readme == 0)); then
-      problem "$rel" 1 "no $(display "$WIKI/$lang/$README_NAME") to link this lesson from"
+      problem "$rel" 1 "no $(display "$(abs_of "$lang")/$README_NAME") to link this lesson from"
     elif [[ -z "${LINKS["$lang"$'\t'"$rel"]+x}" ]]; then
-      problem "$rel" 1 "not linked from $(display "$WIKI/$lang/$README_NAME")"
+      problem "$rel" 1 "not linked from $(display "$(abs_of "$lang")/$README_NAME")"
     fi
-  done < <(find "$WIKI/$lang" -mindepth 1 -maxdepth 1 -print0 | sort -z)
+  done < <(find "$(abs_of "$lang")" -mindepth 1 -maxdepth 1 -print0 | sort -z)
 
   for ((i = 1; i <= max; i++)); do
     nn="$(printf '%02d' "$i")"
@@ -279,7 +295,11 @@ check_language() {
 }
 
 while IFS= read -r -d '' path; do
-  rel="${path#"$WIKI"/}"
+  if [[ "$path" == "$LANGS_ROOT"/* ]]; then
+    rel="$LANGS_DIR/${path#"$LANGS_ROOT"/}"
+  else
+    rel="${path#"$WIKI"/}"
+  fi
   name="${rel##*/}"
   if [[ "$name" != "$README_NAME" ]]; then
     if [[ -z "$(language_of "$rel")" ]]; then
@@ -289,10 +309,14 @@ while IFS= read -r -d '' path; do
   fi
   check_header "$rel"
   [[ "$rel" == "$README_NAME" ]] || check_parent_link "$rel"
-done < <(find "$WIKI" \( -name .git -o -name graft -o -name tmp \) -prune -o -type f -name '*.md' -print0 | sort -z)
+done < <(
+  find "$WIKI" \( -name .git -o -name graft -o -name tmp \) -prune -o -type f -name '*.md' -print0
+  [[ -d "$LANGS_ROOT" ]] && find "$LANGS_ROOT" \( -name .git -o -name graft -o -name tmp \) -prune -o -type f -name '*.md' -print0
+  true
+)
 
 for name in "${LANGUAGES[@]}"; do
-  if [[ -d "$WIKI/$LANGS_DIR/$name" ]]; then
+  if [[ -d "$LANGS_ROOT/$name" ]]; then
     check_language "$LANGS_DIR/$name"
   fi
 done
